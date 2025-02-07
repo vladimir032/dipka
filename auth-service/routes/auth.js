@@ -40,4 +40,23 @@ router.get('/validate', (req, res) => {
   });
 });
 
+// Добавьте этот endpoint в auth-service
+router.get('/verify-user', async (req, res) => {
+  const { userId } = req.query;
+  console.log('Verifying user:', userId);
+  
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log('User not found:', userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('User verified successfully:', userId);
+    res.json({ userId: user._id });
+  } catch (error) {
+    console.error('Error verifying user:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

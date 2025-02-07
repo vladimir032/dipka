@@ -60,13 +60,17 @@ router.delete('/:id', async (req, res) => {
 // Получить рецепты по массиву ID
 router.get('/bulk', async (req, res) => {
     const { ids } = req.query;
-    try {
-      const recipeIds = ids.split(',').map(id => mongoose.Types.ObjectId(id));
-      const recipes = await Recipe.find({ _id: { $in: recipeIds } });
-      res.json(recipes);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    if (!ids) {
+        return res.status(400).json({ message: 'IDs are required' });
     }
-  });
+    try {
+        const recipeIds = ids.split(',');
+        const recipes = await Recipe.find({ _id: { $in: recipeIds } });
+        res.json(recipes);
+    } catch (error) {
+        console.error('Error in bulk recipe fetch:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router;
